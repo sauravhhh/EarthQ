@@ -9,20 +9,23 @@
   body {
     font-family: 'Roboto', Arial, sans-serif;
     background: #fff;
-    color: #000;
+    color: #121212;
     margin: 0; padding: 0;
-    display: flex; flex-direction: column;
+    display: flex;
+    flex-direction: column;
     min-height: 100vh;
   }
   header {
     padding: 1.5rem;
-    font-weight: 700;
-    font-size: 24px;
+    font-weight: 900;
+    font-size: 28px;
     text-align: center;
     border-bottom: 1px solid #ddd;
     background: #fff;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-    letter-spacing: 0.05em;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.07);
+    letter-spacing: 0.07em;
+    font-family: 'Arial Black', Gadget, sans-serif;
+    color: #222;
     user-select: none;
   }
   main {
@@ -38,23 +41,23 @@
     flex-wrap: wrap;
   }
   button, select {
-    background-color: #0a84ff;
+    background-color: #212121;
     border: none;
-    color: white;
-    padding: 0.6rem 0;
-    font-size: 16px;
+    color: #eee;
+    padding: 0.65rem 0;
+    font-size: 18px;
     border-radius: 12px;
     cursor: pointer;
-    box-shadow: 0 2px 6px rgba(10,132,255,0.5);
+    box-shadow: 0 2px 6px rgba(33,33,33,0.85);
     user-select: none;
     transition: background-color 0.3s ease;
     font-weight: 700;
     font-family: 'Roboto', Arial, sans-serif;
-    min-width: 120px;
+    min-width: 140px;
     text-align: center;
   }
   button:hover, select:hover, select:focus {
-    background-color: #006ae6;
+    background-color: #484848;
     outline: none;
   }
   select {
@@ -66,10 +69,10 @@
   }
   .eq-box {
     background: #fff;
-    border: 1px solid #ccc;
-    border-radius: 18px;
-    box-shadow: 0 3px 10px rgba(0,0,0,0.07);
-    padding: 1rem 1.5rem;
+    border: 1px solid #bbb;
+    border-radius: 20px;
+    box-shadow: 0 3px 12px rgba(0,0,0,0.1);
+    padding: 1.5rem 2rem;
   }
   ul.eq-list {
     list-style: none;
@@ -77,49 +80,61 @@
     padding: 0;
   }
   li.eq-item {
-    display: flex; flex-direction: column;
-    gap: 0.4rem;
-    padding: 1rem 0.8rem;
-    border-bottom: 1px solid #f3f3f3;
+    display: flex;
+    align-items: center;
+    padding: 1.3rem 1rem;
+    border-bottom: 1px solid #eee;
+    gap: 1.5rem;
   }
   li.eq-item:last-child {
     border-bottom: none;
   }
   span.mag {
-    display: inline-block;
-    font-size: 1.4rem;
-    font-weight: 700;
-    color: #0a84ff;
-    background: #d5e7ff;
-    border-radius: 12px;
-    padding: 0.3em 0.8em;
+    font-size: 2.75rem;
+    font-weight: 900;
+    color: #1f1f1f;
+    background: #d3d3d3;
+    border-radius: 20px;
+    width: 72px;
+    height: 72px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     user-select: none;
-    width: fit-content;
-    margin-right: 0.6em;
+    box-shadow: 0 3px 7px rgba(0,0,0,0.25);
+    min-width: 72px;
+    min-height: 72px;
+  }
+  .details-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    flex-grow: 1;
+    max-width: calc(100% - 90px);
   }
   div.place {
-    font-size: 1.15rem;
-    color: #202124;
-    font-weight: 500;
+    font-size: 1.4rem;
+    color: #222;
+    font-weight: 700;
     user-select: none;
   }
   div.depth {
-    font-size: 0.95rem;
-    color: #5f6368;
+    font-size: 1.05rem;
+    color: #555;
     font-weight: 400;
     user-select: none;
-    margin-top: -0.25rem;
-    margin-bottom: 0.25rem;
+    margin-top: -0.3rem;
+    margin-bottom: 0.4rem;
   }
   span.time {
-    color: #4a4a4a;
-    font-size: 1rem;
+    color: #666;
+    font-size: 1.12rem;
     font-family: 'Roboto Mono', monospace;
     user-select: none;
   }
   a.details-link {
-    font-size: 1rem;
-    color: #0a84ff;
+    font-size: 1.1rem;
+    color: #222;
     margin-top: 0.35rem;
     text-decoration: underline;
     max-width: fit-content;
@@ -127,13 +142,13 @@
     transition: color 0.25s ease;
   }
   a.details-link:hover {
-    color: #004fc1;
+    color: #555;
   }
   footer {
-    padding: 1.25rem 0;
+    padding: 1.5rem 0;
     text-align: center;
     font-size: 1rem;
-    color: #606060;
+    color: #444;
     user-select: none;
     border-top: 1px solid #ddd;
     background: #fff;
@@ -145,148 +160,159 @@
   }
   @media (max-width: 400px) {
     header {
-      font-size: 20px;
+      font-size: 24px;
       padding: 1rem 1rem 1rem;
     }
     button, select {
-      font-size: 14px;
-      padding: 0.5rem 0;
-      min-width: 100px;
+      font-size: 16px;
+      padding: 0.6rem 0;
+      min-width: 120px;
     }
     li.eq-item {
-      padding: 0.8rem 0.5rem;
+      padding: 1rem 0.5rem;
+      gap: 1rem;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    span.mag {
+      width: 64px;
+      height: 64px;
+      font-size: 2.25rem;
+      min-width: 64px;
+      min-height: 64px;
+    }
+    .details-container {
+      max-width: 100%;
     }
     div.place {
-      font-size: 1rem;
+      font-size: 1.3rem;
     }
     div.depth {
-      font-size: 0.85rem;
+      font-size: 1rem;
     }
     span.time {
-      font-size: 0.9rem;
+      font-size: 1rem;
     }
   }
 </style>
 </head>
 <body>
-  <header>Bhoomikamp</header>
-  <main>
-    <div class="buttons">
-      <button id="refreshBtn" aria-label="Refresh earthquake data">Refresh</button>
-      <select id="sortSelect" aria-label="Select sort option">
-        <option value="default">Default</option>
-        <option value="mag-asc">Magnitude ↑</option>
-        <option value="mag-desc">Magnitude ↓</option>
-        <option value="time-asc">Time ↑ (Oldest first)</option>
-        <option value="time-desc">Time ↓ (Newest first)</option>
-      </select>
-    </div>
-    <div class="eq-box">
-      <ul class="eq-list" id="eq-list">Loading earthquake data...</ul>
-    </div>
-  </main>
-  <footer>Made with ❤️ by Sauravhhh</footer>
+<header>Bhoomikamp</header>
+<main>
+<div class="buttons">
+  <button id="refreshBtn" aria-label="Refresh earthquake data">Refresh</button>
+  <select id="sortSelect" aria-label="Select sort option">
+    <option value="default">Default</option>
+    <option value="mag-asc">Magnitude ↑ (low to high)</option>
+    <option value="mag-desc">Magnitude ↓ (high to low)</option>
+    <option value="time-asc">Time ↑ (oldest first)</option>
+    <option value="time-desc">Time ↓ (newest first)</option>
+  </select>
+</div>
+<div class="eq-box">
+  <ul class="eq-list" id="eq-list">Loading earthquake data...</ul>
+</div>
+</main>
+<footer>Made with ❤️ by Sauravhhh</footer>
 
-  <script>
-    let earthquakeData = [];
-    let originalData = [];
+<script>
+  let earthquakeData = [];
+  let originalData = [];
 
-    const eqList = document.getElementById("eq-list");
-    const refreshBtn = document.getElementById("refreshBtn");
-    const sortSelect = document.getElementById("sortSelect");
+  const eqList = document.getElementById("eq-list");
+  const refreshBtn = document.getElementById("refreshBtn");
+  const sortSelect = document.getElementById("sortSelect");
 
-    // Extract country from place string (usually last part after comma or last word)
-    function extractCountry(place) {
-      if (!place) return "Unknown";
-      // Split by comma and take last part if comma present
-      if (place.includes(',')) {
-        const parts = place.split(',');
-        return parts[parts.length - 1].trim();
-      }
-      // Otherwise split by space and take last word (fallback)
-      let parts = place.trim().split(' ');
-      return parts.length > 0 ? parts[parts.length-1] : place;
+  function extractLocation(place) {
+    if (!place) return "Unknown location";
+    // Extract city and country-like format: last two comma-separated parts or fallback
+    const parts = place.split(',');
+    if (parts.length >= 2) {
+      return parts.slice(-2).map(p => p.trim()).join(', ');
+    } else {
+      return place.trim();
     }
+  }
 
-    async function fetchEarthquakes() {
-      eqList.textContent = "Loading earthquake data...";
-      try {
-        const url = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson";
-        const resp = await fetch(url);
-        const data = await resp.json();
+  async function fetchEarthquakes() {
+    eqList.textContent = "Loading earthquake data...";
+    try {
+      const url = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson";
+      const resp = await fetch(url);
+      const data = await resp.json();
 
-        earthquakeData = data.features.map(eq => ({
-          mag: eq.properties.mag,
-          place: extractCountry(eq.properties.place),
-          depth: eq.geometry.coordinates[2], // depth in km, 3rd coordinate
-          time: eq.properties.time,
-          url: eq.properties.url
-        }));
-        originalData = [...earthquakeData];
-        sortSelect.value = "default";
-        renderEarthquakes(earthquakeData);
-      } catch (e) {
-        eqList.textContent = "Failed to load earthquake data.";
-      }
+      earthquakeData = data.features.map(eq => ({
+        mag: eq.properties.mag,
+        place: extractLocation(eq.properties.place),
+        depth: eq.geometry.coordinates[2],
+        time: eq.properties.time,
+        url: eq.properties.url,
+        date: new Date(eq.properties.time)
+      }));
+      originalData = [...earthquakeData];
+      sortSelect.value = "default";
+      renderEarthquakes(earthquakeData);
+    } catch (e) {
+      eqList.textContent = "Failed to load earthquake data.";
     }
+  }
 
-    function renderEarthquakes(data) {
-      if (!data.length) {
-        eqList.innerHTML = "<li>No recent earthquakes found.</li>";
-        return;
-      }
-      eqList.innerHTML = '';
-      data.slice(0, 30).forEach(eq => {
-        const timeStr = new Date(eq.time).toLocaleString('en-IN', {
-          timeZone: 'Asia/Kolkata',
-          hour12: true,
-          hour: '2-digit',
-          minute: '2-digit'
-        });
-        const magText = eq.mag !== null ? eq.mag.toFixed(1) : "?";
-        const depthText = eq.depth !== undefined && eq.depth !== null ? `Depth: ${eq.depth.toFixed(1)} km` : "Depth: unknown";
-
-        const li = document.createElement("li");
-        li.className = "eq-item";
-        li.innerHTML = `
-          <div>
-            <span class="mag">${magText}</span>
-            <span class="place">${eq.place}</span>
-          </div>
-          <div class="depth">${depthText}</div>
-          <span class="time">${timeStr}</span>
-          <a href="${eq.url}" class="details-link" target="_blank" rel="noopener">Details</a>
-        `;
-        eqList.appendChild(li);
+  function renderEarthquakes(data) {
+    if (!data.length) {
+      eqList.innerHTML = "<li>No recent earthquakes found.</li>";
+      return;
+    }
+    eqList.innerHTML = '';
+    data.slice(0, 30).forEach(eq => {
+      const dateStr = eq.date.toLocaleDateString('en-IN', {
+        day: 'numeric', month: 'short', year: 'numeric'
       });
-    }
+      const timeStr = eq.date.toLocaleTimeString('en-IN', {
+        hour12: true, hour: '2-digit', minute: '2-digit'
+      });
+      const magText = eq.mag !== null ? eq.mag.toFixed(1) : "?";
+      const depthText = eq.depth !== undefined && eq.depth !== null ? `Depth: ${eq.depth.toFixed(1)} km` : "Depth unknown";
 
-    sortSelect.addEventListener("change", () => {
-      let sorted;
-      switch (sortSelect.value) {
-        case "mag-asc":
-          sorted = [...earthquakeData].sort((a,b) => (a.mag || 0) - (b.mag || 0));
-          break;
-        case "mag-desc":
-          sorted = [...earthquakeData].sort((a,b) => (b.mag || 0) - (a.mag || 0));
-          break;
-        case "time-asc":
-          sorted = [...earthquakeData].sort((a,b) => a.time - b.time);
-          break;
-        case "time-desc":
-          sorted = [...earthquakeData].sort((a,b) => b.time - a.time);
-          break;
-        case "default":
-        default:
-          sorted = [...originalData];
-      }
-      renderEarthquakes(sorted);
+      const li = document.createElement("li");
+      li.className = "eq-item";
+      li.innerHTML = `
+        <span class="mag">${magText}</span>
+        <div class="details-container">
+          <div class="place">${eq.place}</div>
+          <div class="depth">${depthText}</div>
+          <span class="time">${dateStr}, ${timeStr}</span>
+          <a href="${eq.url}" class="details-link" target="_blank" rel="noopener">Details</a>
+        </div>
+      `;
+      eqList.appendChild(li);
     });
+  }
 
-    refreshBtn.addEventListener("click", fetchEarthquakes);
+  sortSelect.addEventListener("change", () => {
+    let sorted;
+    switch (sortSelect.value) {
+      case "mag-asc":
+        sorted = [...earthquakeData].sort((a,b) => (a.mag || 0) - (b.mag || 0));
+        break;
+      case "mag-desc":
+        sorted = [...earthquakeData].sort((a,b) => (b.mag || 0) - (a.mag || 0));
+        break;
+      case "time-asc":
+        sorted = [...earthquakeData].sort((a,b) => a.time - b.time);
+        break;
+      case "time-desc":
+        sorted = [...earthquakeData].sort((a,b) => b.time - a.time);
+        break;
+      case "default":
+      default:
+        sorted = [...originalData];
+    }
+    renderEarthquakes(sorted);
+  });
 
-    fetchEarthquakes();
-  </script>
+  refreshBtn.addEventListener("click", fetchEarthquakes);
+
+  fetchEarthquakes();
+</script>
 </body>
-  </html>
-  
+</html>
