@@ -1,48 +1,47 @@
-# BhumiKamp (Minimalist Global Earthquake Viewer)
+# Bhoomikamp
 
-A simple, minimalist, mobile-friendly app to show worldwide earthquakes in the last 24 hours.
+Bhoomikamp is a **minimalistic, mobile-friendly web app** that displays worldwide earthquakes that occurred in the last 24 hours. It presents real-time earthquake data sourced from the USGS Earthquake API, providing essential earthquake details with a clean and user-friendly Design inspired by Material Design and iOS aesthetics.
 
 ## Features
 
-- Global coverage (last 24 hours)
-- Minimal, white-themed UI
-- Mobile-friendly design
+- Live earthquake data for the last 24 hours worldwide
+- Earthquake magnitude prominently displayed in a large square box
+- Location displayed in a concise "City, Country" format
+- Detailed information includes depth, date, and time (converted to Indian Standard Time with am/pm)
+- Sort earthquakes by:
+  - Default (original API order)
+  - Magnitude (ascending/descending)
+  - Time (oldest first/newest first)
+- Refresh button to fetch the latest data instantly
+- Responsive, readable UI optimized for mobile and desktop
+- Dark-themed buttons with uniform sizing and modern typography
 
-## Getting Started
+## Screenshot
 
-1. **Clone the repo:**
-   ```
-   git clone https://github.com/sauravhhh/BhumiKamp.git
-   cd BhumiKamp
-   ```
+![Screenshot of Bhoomikamp](screenshot.png)
 
-2. **Install dependencies:**
-   ```
-   npm install
-   ```
+## Technologies Used
 
-3. **Start the dev server:**
-   ```
-   npm start
-   ```
-   Then open [http://localhost:5173](http://localhost:5173)
+- HTML5, CSS3 (with Flexbox and Google Fonts - Roboto)
+- JavaScript (ES6+)
+- USGS Earthquake GeoJSON API for live earthquake data
 
-## Build
+## Usage
 
-```
-npm run build
-```
-
-## Stack
-
-- React
-- Tailwind CSS
-- Vite
+1. Open `index.html` in any modern web browser.
+2. Click the **Refresh** button to fetch and display the latest earthquake data.
+3. Use the **Sort** dropdown to organize earthquakes by magnitude or time.
+4. Click **Details** on any earthquake to open the USGS page for more information.
 
 ## Data Source
 
-[USGS Earthquake API](https://earthquake.usgs.gov/earthquakes/feed/v1.0/geojson.php)
+Data is retrieved in real-time from the US Geological Survey (USGS) earthquake feed:  
+[https://earthquake.usgs.gov/earthquakes/feed/v1.0/geojson.php](https://earthquake.usgs.gov/earthquakes/feed/v1.0/geojson.php)
+
+## License
+
+This project is released under the MIT License.
 
 ---
 
-Minimalist, fast, open source.
+Made with ❤️ by Sauravhhh
