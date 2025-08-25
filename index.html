@@ -1,12 +1,292 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>BhumiKamp</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
-</html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+<title>Bhoomikamp - Earthquakes Last 24h</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+
+  body {
+    font-family: 'Roboto', Arial, sans-serif;
+    background: #fff;
+    color: #000;
+    margin: 0; padding: 0;
+    display: flex; flex-direction: column;
+    min-height: 100vh;
+  }
+  header {
+    padding: 1.5rem;
+    font-weight: 700;
+    font-size: 24px;
+    text-align: center;
+    border-bottom: 1px solid #ddd;
+    background: #fff;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    letter-spacing: 0.05em;
+    user-select: none;
+  }
+  main {
+    max-width: 600px;
+    margin: 1rem auto 2rem;
+    width: 90vw;
+  }
+  .buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+  }
+  button, select {
+    background-color: #0a84ff;
+    border: none;
+    color: white;
+    padding: 0.6rem 0;
+    font-size: 16px;
+    border-radius: 12px;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(10,132,255,0.5);
+    user-select: none;
+    transition: background-color 0.3s ease;
+    font-weight: 700;
+    font-family: 'Roboto', Arial, sans-serif;
+    min-width: 120px;
+    text-align: center;
+  }
+  button:hover, select:hover, select:focus {
+    background-color: #006ae6;
+    outline: none;
+  }
+  select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    padding-right: 2.5rem;
+    text-align-last: center;
+  }
+  .eq-box {
+    background: #fff;
+    border: 1px solid #ccc;
+    border-radius: 18px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.07);
+    padding: 1rem 1.5rem;
+  }
+  ul.eq-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  li.eq-item {
+    display: flex; flex-direction: column;
+    gap: 0.4rem;
+    padding: 1rem 0.8rem;
+    border-bottom: 1px solid #f3f3f3;
+  }
+  li.eq-item:last-child {
+    border-bottom: none;
+  }
+  span.mag {
+    display: inline-block;
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #0a84ff;
+    background: #d5e7ff;
+    border-radius: 12px;
+    padding: 0.3em 0.8em;
+    user-select: none;
+    width: fit-content;
+    margin-right: 0.6em;
+  }
+  div.place {
+    font-size: 1.15rem;
+    color: #202124;
+    font-weight: 500;
+    user-select: none;
+  }
+  div.depth {
+    font-size: 0.95rem;
+    color: #5f6368;
+    font-weight: 400;
+    user-select: none;
+    margin-top: -0.25rem;
+    margin-bottom: 0.25rem;
+  }
+  span.time {
+    color: #4a4a4a;
+    font-size: 1rem;
+    font-family: 'Roboto Mono', monospace;
+    user-select: none;
+  }
+  a.details-link {
+    font-size: 1rem;
+    color: #0a84ff;
+    margin-top: 0.35rem;
+    text-decoration: underline;
+    max-width: fit-content;
+    user-select: none;
+    transition: color 0.25s ease;
+  }
+  a.details-link:hover {
+    color: #004fc1;
+  }
+  footer {
+    padding: 1.25rem 0;
+    text-align: center;
+    font-size: 1rem;
+    color: #606060;
+    user-select: none;
+    border-top: 1px solid #ddd;
+    background: #fff;
+    max-width: 600px;
+    margin: 0 auto;
+    width: 90vw;
+    font-weight: 500;
+    font-family: 'Roboto', Arial, sans-serif;
+  }
+  @media (max-width: 400px) {
+    header {
+      font-size: 20px;
+      padding: 1rem 1rem 1rem;
+    }
+    button, select {
+      font-size: 14px;
+      padding: 0.5rem 0;
+      min-width: 100px;
+    }
+    li.eq-item {
+      padding: 0.8rem 0.5rem;
+    }
+    div.place {
+      font-size: 1rem;
+    }
+    div.depth {
+      font-size: 0.85rem;
+    }
+    span.time {
+      font-size: 0.9rem;
+    }
+  }
+</style>
+</head>
+<body>
+  <header>Bhoomikamp</header>
+  <main>
+    <div class="buttons">
+      <button id="refreshBtn" aria-label="Refresh earthquake data">Refresh</button>
+      <select id="sortSelect" aria-label="Select sort option">
+        <option value="default">Default</option>
+        <option value="mag-asc">Magnitude ↑</option>
+        <option value="mag-desc">Magnitude ↓</option>
+        <option value="time-asc">Time ↑ (Oldest first)</option>
+        <option value="time-desc">Time ↓ (Newest first)</option>
+      </select>
+    </div>
+    <div class="eq-box">
+      <ul class="eq-list" id="eq-list">Loading earthquake data...</ul>
+    </div>
+  </main>
+  <footer>Made with ❤️ by Sauravhhh</footer>
+
+  <script>
+    let earthquakeData = [];
+    let originalData = [];
+
+    const eqList = document.getElementById("eq-list");
+    const refreshBtn = document.getElementById("refreshBtn");
+    const sortSelect = document.getElementById("sortSelect");
+
+    // Extract country from place string (usually last part after comma or last word)
+    function extractCountry(place) {
+      if (!place) return "Unknown";
+      // Split by comma and take last part if comma present
+      if (place.includes(',')) {
+        const parts = place.split(',');
+        return parts[parts.length - 1].trim();
+      }
+      // Otherwise split by space and take last word (fallback)
+      let parts = place.trim().split(' ');
+      return parts.length > 0 ? parts[parts.length-1] : place;
+    }
+
+    async function fetchEarthquakes() {
+      eqList.textContent = "Loading earthquake data...";
+      try {
+        const url = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson";
+        const resp = await fetch(url);
+        const data = await resp.json();
+
+        earthquakeData = data.features.map(eq => ({
+          mag: eq.properties.mag,
+          place: extractCountry(eq.properties.place),
+          depth: eq.geometry.coordinates[2], // depth in km, 3rd coordinate
+          time: eq.properties.time,
+          url: eq.properties.url
+        }));
+        originalData = [...earthquakeData];
+        sortSelect.value = "default";
+        renderEarthquakes(earthquakeData);
+      } catch (e) {
+        eqList.textContent = "Failed to load earthquake data.";
+      }
+    }
+
+    function renderEarthquakes(data) {
+      if (!data.length) {
+        eqList.innerHTML = "<li>No recent earthquakes found.</li>";
+        return;
+      }
+      eqList.innerHTML = '';
+      data.slice(0, 30).forEach(eq => {
+        const timeStr = new Date(eq.time).toLocaleString('en-IN', {
+          timeZone: 'Asia/Kolkata',
+          hour12: true,
+          hour: '2-digit',
+          minute: '2-digit'
+        });
+        const magText = eq.mag !== null ? eq.mag.toFixed(1) : "?";
+        const depthText = eq.depth !== undefined && eq.depth !== null ? `Depth: ${eq.depth.toFixed(1)} km` : "Depth: unknown";
+
+        const li = document.createElement("li");
+        li.className = "eq-item";
+        li.innerHTML = `
+          <div>
+            <span class="mag">${magText}</span>
+            <span class="place">${eq.place}</span>
+          </div>
+          <div class="depth">${depthText}</div>
+          <span class="time">${timeStr}</span>
+          <a href="${eq.url}" class="details-link" target="_blank" rel="noopener">Details</a>
+        `;
+        eqList.appendChild(li);
+      });
+    }
+
+    sortSelect.addEventListener("change", () => {
+      let sorted;
+      switch (sortSelect.value) {
+        case "mag-asc":
+          sorted = [...earthquakeData].sort((a,b) => (a.mag || 0) - (b.mag || 0));
+          break;
+        case "mag-desc":
+          sorted = [...earthquakeData].sort((a,b) => (b.mag || 0) - (a.mag || 0));
+          break;
+        case "time-asc":
+          sorted = [...earthquakeData].sort((a,b) => a.time - b.time);
+          break;
+        case "time-desc":
+          sorted = [...earthquakeData].sort((a,b) => b.time - a.time);
+          break;
+        case "default":
+        default:
+          sorted = [...originalData];
+      }
+      renderEarthquakes(sorted);
+    });
+
+    refreshBtn.addEventListener("click", fetchEarthquakes);
+
+    fetchEarthquakes();
+  </script>
+</body>
+  </html>
+  
