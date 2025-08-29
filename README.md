@@ -1,6 +1,6 @@
 # Bhoomikamp
 
-Bhoomikamp is a **minimalistic, mobile-friendly web app** that displays worldwide earthquakes that occurred in the last 24 hours. It presents real-time earthquake data sourced from the USGS Earthquake API, providing essential earthquake details with a clean and user-friendly Design inspired by Material Design and iOS aesthetics.
+Bhoomikamp is a **minimalistic, mobile-friendly web app** that displays worldwide earthquakes that occurred in the last 24 hours. It presents real-time earthquake data sourced from the USGS Earthquake API, providing essential earthquake details with a clean and user-friendly Design.
 
 ## Features
 
