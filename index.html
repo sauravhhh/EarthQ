@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EarthQ</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .earthquake-item {
+            transition: all 0.3s ease;
+        }
+        .earthquake-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        .magnitude-badge {
+            min-width: 50px;
+            text-align: center;
+        }
+        #map {
+            height: 300px;
+            z-index: 1;
+        }
+        .loading-spinner {
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top: 3px solid #3b82f6;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .tab-active {
+            border-bottom: 3px solid #3b82f6;
+            color: #3b82f6;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+    <!-- Header -->
+    <header class="bg-white shadow-sm sticky top-0 z-10">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-2">
+                    <i class="fas fa-house-damage text-blue-500 text-2xl"></i>
+                    <h1 class="text-xl font-bold">EarthQ</h1>
+                </div>
+                <button id="refreshBtn" class="p-2 rounded-full hover:bg-gray-100 transition">
+                    <i class="fas fa-sync-alt text-gray-600"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-6">
+        <!-- Stats Cards -->
+        <section class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+            <div class="bg-white rounded-lg shadow p-4">
+                <div class="text-gray-500 text-sm">Total Earthquakes</div>
+                <div id="totalCount" class="text-2xl font-bold">-</div>
+            </div>
+            <div class="bg-white rounded-lg shadow p-4">
+                <div class="text-gray-500 text-sm">Significant (4.0+)</div>
+                <div id="significantCount" class="text-2xl font-bold text-orange-500">-</div>
+            </div>
+            <div class="bg-white rounded-lg shadow p-4">
+                <div class="text-gray-500 text-sm">Major (5.0+)</div>
+                <div id="majorCount" class="text-2xl font-bold text-red-500">-</div>
+            </div>
+            <div class="bg-white rounded-lg shadow p-4">
+                <div class="text-gray-500 text-sm">Last Updated</div>
+                <div id="lastUpdated" class="text-sm font-medium">-</div>
+            </div>
+        </section>
+
+        <!-- Tabs -->
+        <div class="bg-white rounded-lg shadow mb-6">
+            <div class="flex border-b">
+                <button class="tab-btn flex-1 py-3 font-medium tab-active" data-tab="list">
+                    <i class="fas fa-list mr-2"></i>List View
+                </button>
+                <button class="tab-btn flex-1 py-3 font-medium" data-tab="map">
+                    <i class="fas fa-map mr-2"></i>Map View
+                </button>
+            </div>
+
+            <!-- List View -->
+            <div id="listView" class="tab-content p-4">
+                <!-- Filters -->
+                <div class="flex flex-wrap gap-2 mb-4">
+                    <select id="magnitudeFilter" class="px-3 py-2 border rounded-lg text-sm">
+                        <option value="all">All Magnitudes</option>
+                        <option value="1">1.0+</option>
+                        <option value="2">2.0+</option>
+                        <option value="3">3.0+</option>
+                        <option value="4">4.0+</option>
+                        <option value="5">5.0+</option>
+                    </select>
+                    <select id="timeFilter" class="px-3 py-2 border rounded-lg text-sm">
+                        <option value="day">Past Day</option>
+                        <option value="week">Past Week</option>
+                        <option value="month">Past Month</option>
+                    </select>
+                    <button id="applyFilters" class="px-4 py-2 bg-blue-500 text-white rounded-lg text-sm hover:bg-blue-600 transition">
+                        Apply Filters
+                    </button>
+                </div>
+
+                <!-- Earthquake List -->
+                <div id="earthquakeList" class="space-y-3">
+                    <div class="flex justify-center items-center py-8">
+                        <div class="loading-spinner"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Map View -->
+            <div id="mapView" class="tab-content hidden">
+                <div id="map"></div>
+                <div class="p-4">
+                    <div class="flex items-center space-x-4 text-sm">
+                        <div class="flex items-center">
+                            <div class="w-3 h-3 bg-green-500 rounded-full mr-2"></div>
+                            <span>Minor (&lt;4.0)</span>
+                        </div>
+                        <div class="flex items-center">
+                            <div class="w-3 h-3 bg-orange-500 rounded-full mr-2"></div>
+                            <span>Significant (4.0-4.9)</span>
+                        </div>
+                        <div class="flex items-center">
+                            <div class="w-3 h-3 bg-red-500 rounded-full mr-2"></div>
+                            <span>Major (5.0+)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Info Section -->
+        <section class="bg-white rounded-lg shadow p-6">
+            <h2 class="text-lg font-bold mb-3">About Earthquake Data</h2>
+            <p class="text-gray-600 text-sm mb-3">
+                This application displays real-time earthquake data from the United States Geological Survey (USGS) 
+                Earthquake Hazards Program. Data is updated every minute.
+            </p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                <div>
+                    <h3 class="font-semibold mb-2">Magnitude Scale</h3>
+                    <ul class="space-y-1 text-gray-600">
+                        <li>• Minor: Less than 4.0 magnitude</li>
+                        <li>• Light: 4.0 - 4.9 magnitude</li>
+                        <li>• Moderate: 5.0 - 5.9 magnitude</li>
+                        <li>• Strong: 6.0 - 6.9 magnitude</li>
+                        <li>• Major: 7.0 or higher magnitude</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="font-semibold mb-2">Depth Categories</h3>
+                    <ul class="space-y-1 text-gray-600">
+                        <li>• Shallow: Less than 70 km</li>
+                        <li>• Intermediate: 70 - 300 km</li>
+                        <li>• Deep: More than 300 km</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white mt-8 py-6 border-t">
+        <div class="container mx-auto px-4 text-center text-sm text-gray-600">
+            <p>Data provided by <a href="https://earthquake.usgs.gov" target="_blank" class="text-blue-500 hover:underline">USGS Earthquake Hazards Program</a></p>
+            <p class="mt-1">Made with ❤️ by Sauravhhh</p>
+        </div>
+    </footer>
+
+    <script>
+        // Global variables
+        let earthquakeData = [];
+        let map;
+        let markers = [];
+        
+        // Helper function to convert UTC time to IST (Indian Standard Time)
+        function convertToIST(utcTime) {
+            const date = new Date(utcTime);
+            // Convert to IST (UTC+5:30)
+            const istOffset = 5.5 * 60 * 60 * 1000; // 5 hours 30 minutes in milliseconds
+            const istTime = new Date(date.getTime() + istOffset + date.getTimezoneOffset() * 60 * 1000);
+            
+            // Format time with AM/PM
+            let hours = istTime.getHours();
+            const minutes = istTime.getMinutes().toString().padStart(2, '0');
+            const seconds = istTime.getSeconds().toString().padStart(2, '0');
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            
+            hours = hours % 12;
+            hours = hours ? hours : 12; // the hour '0' should be '12'
+            
+            return `${hours}:${minutes}:${seconds} ${ampm}`;
+        }
+        
+        // Initialize the app
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeTabs();
+            fetchEarthquakeData();
+            
+            // Event listeners
+            document.getElementById('refreshBtn').addEventListener('click', fetchEarthquakeData);
+            document.getElementById('applyFilters').addEventListener('click', applyFilters);
+        });
+        
+        // Tab functionality
+        function initializeTabs() {
+            const tabBtns = document.querySelectorAll('.tab-btn');
+            const tabContents = document.querySelectorAll('.tab-content');
+            
+            tabBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const tabName = this.getAttribute('data-tab');
+                    
+                    // Update active tab button
+                    tabBtns.forEach(b => b.classList.remove('tab-active'));
+                    this.classList.add('tab-active');
+                    
+                    // Show corresponding tab content
+                    tabContents.forEach(content => {
+                        if (content.id === tabName + 'View') {
+                            content.classList.remove('hidden');
+                            if (tabName === 'map' && !map) {
+                                initializeMap();
+                            } else if (tabName === 'map' && map) {
+                                setTimeout(() => map.invalidateSize(), 100);
+                            }
+                        } else {
+                            content.classList.add('hidden');
+                        }
+                    });
+                });
+            });
+        }
+        
+        // Fetch earthquake data from USGS API
+        async function fetchEarthquakeData() {
+            const timeFilter = document.getElementById('timeFilter').value;
+            const apiUrl = `https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_${timeFilter}.geojson`;
+            
+            // Show loading state
+            document.getElementById('earthquakeList').innerHTML = `
+                <div class="flex justify-center items-center py-8">
+                    <div class="loading-spinner"></div>
+                </div>
+            `;
+            
+            try {
+                const response = await fetch(apiUrl);
+                const data = await response.json();
+                earthquakeData = data.features;
+                
+                updateStats();
+                renderEarthquakeList();
+                updateMapMarkers();
+                
+                // Update last updated time in IST
+                const now = new Date();
+                document.getElementById('lastUpdated').textContent = convertToIST(now.getTime());
+            } catch (error) {
+                console.error('Error fetching earthquake data:', error);
+                document.getElementById('earthquakeList').innerHTML = `
+                    <div class="text-center py-8 text-red-500">
+                        <i class="fas fa-exclamation-circle text-3xl mb-2"></i>
+                        <p>Failed to load earthquake data. Please try again.</p>
+                    </div>
+                `;
+            }
+        }
+        
+        // Update statistics
+        function updateStats() {
+            const totalCount = earthquakeData.length;
+            const significantCount = earthquakeData.filter(eq => eq.properties.mag >= 4.0).length;
+            const majorCount = earthquakeData.filter(eq => eq.properties.mag >= 5.0).length;
+            
+            document.getElementById('totalCount').textContent = totalCount;
+            document.getElementById('significantCount').textContent = significantCount;
+            document.getElementById('majorCount').textContent = majorCount;
+        }
+        
+        // Render earthquake list
+        function renderEarthquakeList() {
+            const listContainer = document.getElementById('earthquakeList');
+            const magnitudeFilter = parseFloat(document.getElementById('magnitudeFilter').value);
+            
+            let filteredData = earthquakeData;
+            if (magnitudeFilter) {
+                filteredData = earthquakeData.filter(eq => eq.properties.mag >= magnitudeFilter);
+            }
+            
+            if (filteredData.length === 0) {
+                listContainer.innerHTML = `
+                    <div class="text-center py-8 text-gray-500">
+                        <i class="fas fa-search text-3xl mb-2"></i>
+                        <p>No earthquakes found matching your criteria.</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            listContainer.innerHTML = filteredData.map(earthquake => {
+                const props = earthquake.properties;
+                const coords = earthquake.geometry.coordinates;
+                const magnitude = props.mag;
+                const time = new Date(props.time);
+                
+                // Determine magnitude color
+                let magnitudeColor = 'bg-green-500';
+                if (magnitude >= 5.0) magnitudeColor = 'bg-red-500';
+                else if (magnitude >= 4.0) magnitudeColor = 'bg-orange-500';
+                
+                // Format depth
+                const depth = coords[2].toFixed(1);
+                let depthCategory = 'Shallow';
+                if (depth > 300) depthCategory = 'Deep';
+                else if (depth > 70) depthCategory = 'Intermediate';
+                
+                return `
+                    <div class="earthquake-item bg-white border rounded-lg p-4 cursor-pointer" onclick="showEarthquakeDetail('${earthquake.id}')">
+                        <div class="flex items-start">
+                            <div class="magnitude-badge ${magnitudeColor} text-white rounded px-2 py-1 mr-3">
+                                ${magnitude.toFixed(1)}
+                            </div>
+                            <div class="flex-1">
+                                <h3 class="font-semibold">${props.place || 'Unknown Location'}</h3>
+                                <div class="flex flex-wrap gap-2 mt-2 text-sm text-gray-600">
+                                    <span><i class="far fa-clock mr-1"></i>${convertToIST(props.time)}</span>
+                                    <span><i class="fas fa-ruler-vertical mr-1"></i>${depth} km (${depthCategory})</span>
+                                </div>
+                            </div>
+                            <i class="fas fa-chevron-right text-gray-400"></i>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        // Initialize map
+        function initializeMap() {
+            map = L.map('map').setView([20, 0], 2);
+            
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors'
+            }).addTo(map);
+            
+            updateMapMarkers();
+        }
+        
+        // Update map markers
+        function updateMapMarkers() {
+            if (!map) return;
+            
+            // Clear existing markers
+            markers.forEach(marker => map.removeLayer(marker));
+            markers = [];
+            
+            // Add new markers
+            earthquakeData.forEach(earthquake => {
+                const props = earthquake.properties;
+                const coords = earthquake.geometry.coordinates;
+                const magnitude = props.mag;
+                
+                // Determine marker color based on magnitude
+                let markerColor = '#10b981'; // green
+                if (magnitude >= 5.0) markerColor = '#ef4444'; // red
+                else if (magnitude >= 4.0) markerColor = '#f97316'; // orange
+                
+                // Create custom icon
+                const icon = L.divIcon({
+                    className: 'custom-marker',
+                    html: `<div style="background-color: ${markerColor}; width: 20px; height: 20px; border-radius: 50%; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.3);"></div>`,
+                    iconSize: [20, 20],
+                    iconAnchor: [10, 10]
+                });
+                
+                const marker = L.marker([coords[1], coords[0]], { icon })
+                    .addTo(map)
+                    .bindPopup(`
+                        <div class="p-2">
+                            <h3 class="font-bold">${props.place || 'Unknown Location'}</h3>
+                            <p><strong>Magnitude:</strong> ${magnitude.toFixed(1)}</p>
+                            <p><strong>Depth:</strong> ${coords[2].toFixed(1)} km</p>
+                            <p><strong>Time:</strong> ${convertToIST(props.time)}</p>
+                        </div>
+                    `);
+                
+                markers.push(marker);
+            });
+        }
+        
+        // Apply filters
+        function applyFilters() {
+            renderEarthquakeList();
+        }
+        
+        // Show earthquake detail (placeholder for future enhancement)
+        function showEarthquakeDetail(earthquakeId) {
+            const earthquake = earthquakeData.find(eq => eq.id === earthquakeId);
+            if (!earthquake) return;
+            
+            const props = earthquake.properties;
+            const coords = earthquake.geometry.coordinates;
+            
+            // Create modal
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4';
+            modal.innerHTML = `
+                <div class="bg-white rounded-lg max-w-md w-full max-h-[90vh] overflow-y-auto">
+                    <div class="p-6">
+                        <div class="flex justify-between items-start mb-4">
+                            <h2 class="text-xl font-bold">Earthquake Details</h2>
+                            <button onclick="this.closest('.fixed').remove()" class="text-gray-500 hover:text-gray-700">
+                                <i class="fas fa-times text-xl"></i>
+                            </button>
+                        </div>
+                        <div class="space-y-3">
+                            <div>
+                                <h3 class="text-sm text-gray-500">Location</h3>
+                                <p class="font-medium">${props.place || 'Unknown Location'}</p>
+                            </div>
+                            <div>
+                                <h3 class="text-sm text-gray-500">Magnitude</h3>
+                                <p class="font-medium text-2xl">${props.mag.toFixed(1)}</p>
+                            </div>
+                            <div>
+                                <h3 class="text-sm text-gray-500
