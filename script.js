@@ -1,3 +1,4 @@
+// script.js
 // Global variables
 let earthquakeData = [];
 let map;
@@ -24,6 +25,7 @@ function convertToIST(utcTime) {
 
 // Initialize the app
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM loaded, initializing app');
     initializeTabs();
     fetchEarthquakeData();
     
@@ -67,6 +69,8 @@ async function fetchEarthquakeData() {
     const timeFilter = document.getElementById('timeFilter').value;
     const apiUrl = `https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_${timeFilter}.geojson`;
     
+    console.log('Fetching data from:', apiUrl);
+    
     // Show loading state
     document.getElementById('earthquakeList').innerHTML = `
         <div class="flex justify-center items-center py-8">
@@ -76,8 +80,22 @@ async function fetchEarthquakeData() {
     
     try {
         const response = await fetch(apiUrl);
+        console.log('Response status:', response.status);
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        
         const data = await response.json();
+        console.log('Data received:', data);
+        
+        // Check if data has features
+        if (!data.features || !Array.isArray(data.features)) {
+            throw new Error('Invalid data format: features array missing');
+        }
+        
         earthquakeData = data.features;
+        console.log('Earthquake data set, length:', earthquakeData.length);
         
         updateStats();
         renderEarthquakeList();
@@ -92,6 +110,7 @@ async function fetchEarthquakeData() {
             <div class="text-center py-8 text-red-500">
                 <i class="fas fa-exclamation-circle text-3xl mb-2"></i>
                 <p>Failed to load earthquake data. Please try again.</p>
+                <p class="text-sm mt-2">Error: ${error.message}</p>
             </div>
         `;
     }
@@ -99,6 +118,7 @@ async function fetchEarthquakeData() {
 
 // Update statistics
 function updateStats() {
+    console.log('Updating stats with data length:', earthquakeData.length);
     const totalCount = earthquakeData.length;
     const significantCount = earthquakeData.filter(eq => eq.properties.mag >= 4.0).length;
     const majorCount = earthquakeData.filter(eq => eq.properties.mag >= 5.0).length;
@@ -110,6 +130,7 @@ function updateStats() {
 
 // Render earthquake list
 function renderEarthquakeList() {
+    console.log('Rendering earthquake list, data length:', earthquakeData.length);
     const listContainer = document.getElementById('earthquakeList');
     const magnitudeFilter = parseFloat(document.getElementById('magnitudeFilter').value);
     
@@ -117,6 +138,7 @@ function renderEarthquakeList() {
     if (magnitudeFilter) {
         filteredData = earthquakeData.filter(eq => eq.properties.mag >= magnitudeFilter);
     }
+    console.log('Filtered data length:', filteredData.length);
     
     if (filteredData.length === 0) {
         listContainer.innerHTML = `
@@ -167,6 +189,7 @@ function renderEarthquakeList() {
 
 // Initialize map
 function initializeMap() {
+    console.log('Initializing map');
     map = L.map('map').setView([20, 0], 2);
     
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -178,6 +201,7 @@ function initializeMap() {
 
 // Update map markers
 function updateMapMarkers() {
+    console.log('Updating map markers, data length:', earthquakeData.length);
     if (!map) return;
     
     // Clear existing markers
@@ -220,11 +244,13 @@ function updateMapMarkers() {
 
 // Apply filters
 function applyFilters() {
+    console.log('Applying filters');
     renderEarthquakeList();
 }
 
 // Show earthquake detail (placeholder for future enhancement)
 function showEarthquakeDetail(earthquakeId) {
+    console.log('Showing earthquake detail for:', earthquakeId);
     const earthquake = earthquakeData.find(eq => eq.id === earthquakeId);
     if (!earthquake) return;
     
@@ -275,4 +301,4 @@ function showEarthquakeDetail(earthquakeId) {
         </div>
     `;
     document.body.appendChild(modal);
-}
+                 }
