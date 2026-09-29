@@ -40,6 +40,11 @@
             border-bottom: 3px solid #3b82f6;
             color: #3b82f6;
         }
+        .mag-chip-active {
+            background-color: #3b82f6 !important;
+            color: #ffffff !important;
+            border-color: #3b82f6 !important;
+        }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-800">
@@ -94,23 +99,13 @@
             <!-- List View -->
             <div id="listView" class="tab-content p-4">
                 <!-- Filters -->
-                <div class="flex flex-wrap gap-2 mb-4">
-                    <select id="magnitudeFilter" class="px-3 py-2 border rounded-lg text-sm">
-                        <option value="all">All Magnitudes</option>
-                        <option value="1">1.0+</option>
-                        <option value="2">2.0+</option>
-                        <option value="3">3.0+</option>
-                        <option value="4" selected>4.0+</option>
-                        <option value="5">5.0+</option>
-                    </select>
-                    <select id="timeFilter" class="px-3 py-2 border rounded-lg text-sm">
-                        <option value="day">Past Day</option>
-                        <option value="week">Past Week</option>
-                        <option value="month">Past Month</option>
-                    </select>
-                    <button id="applyFilters" class="px-4 py-2 bg-blue-500 text-white rounded-lg text-sm hover:bg-blue-600 transition">
-                        Apply Filters
-                    </button>
+                <div class="flex flex-wrap gap-2 mb-4" id="magnitudeFilter">
+                    <button data-value="all" class="mag-chip px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white text-gray-700">All</button>
+                    <button data-value="1" class="mag-chip px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white text-gray-700">1.0+</button>
+                    <button data-value="2" class="mag-chip px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white text-gray-700">2.0+</button>
+                    <button data-value="3" class="mag-chip px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white text-gray-700">3.0+</button>
+                    <button data-value="4" class="mag-chip mag-chip-active px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white text-gray-700">4.0+</button>
+                    <button data-value="5" class="mag-chip px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white text-gray-700">5.0+</button>
                 </div>
 
                 <!-- Earthquake List -->
@@ -224,7 +219,16 @@
             
             // Event listeners
             document.getElementById('refreshBtn').addEventListener('click', fetchEarthquakeData);
-            document.getElementById('applyFilters').addEventListener('click', applyFilters);
+            
+            // Magnitude chip filter (tapping a chip filters instantly)
+            const magChips = document.querySelectorAll('#magnitudeFilter .mag-chip');
+            magChips.forEach(chip => {
+                chip.addEventListener('click', function() {
+                    magChips.forEach(c => c.classList.remove('mag-chip-active'));
+                    this.classList.add('mag-chip-active');
+                    renderEarthquakeList();
+                });
+            });
         });
         
         // Tab functionality
@@ -259,8 +263,7 @@
         
         // Fetch earthquake data from USGS API
         async function fetchEarthquakeData() {
-            const timeFilter = document.getElementById('timeFilter').value;
-            const apiUrl = `https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_${timeFilter}.geojson`;
+            const apiUrl = `https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson`;
             
             // Show loading state
             document.getElementById('earthquakeList').innerHTML = `
@@ -306,7 +309,8 @@
         // Render earthquake list
         function renderEarthquakeList() {
             const listContainer = document.getElementById('earthquakeList');
-            const magnitudeFilter = parseFloat(document.getElementById('magnitudeFilter').value);
+            const activeChip = document.querySelector('#magnitudeFilter .mag-chip-active');
+            const magnitudeFilter = activeChip ? parseFloat(activeChip.dataset.value) : NaN;
             
             let filteredData = earthquakeData;
             if (magnitudeFilter) {
@@ -411,11 +415,6 @@
                 
                 markers.push(marker);
             });
-        }
-        
-        // Apply filters
-        function applyFilters() {
-            renderEarthquakeList();
         }
         
         // Show earthquake detail (placeholder for future enhancement)
