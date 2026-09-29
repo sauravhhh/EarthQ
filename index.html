@@ -100,7 +100,7 @@
                         <option value="1">1.0+</option>
                         <option value="2">2.0+</option>
                         <option value="3">3.0+</option>
-                        <option value="4">4.0+</option>
+                        <option value="4" selected>4.0+</option>
                         <option value="5">5.0+</option>
                     </select>
                     <select id="timeFilter" class="px-3 py-2 border rounded-lg text-sm">
@@ -438,7 +438,8 @@
                             </div>
                             <div>
                                 <h3 class="text-sm text-gray-500">Depth</h3>
-                                /div>
+                                <p class="font-medium">${coords[2].toFixed(1)} km</p>
+                            </div>
                             <div>
                                 <h3 class="text-sm text-gray-500">Time (IST)</h3>
                                 <p class="font-medium">${convertToIST(props.time)}</p>
