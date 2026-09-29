@@ -206,6 +206,17 @@
             return `${hours}:${minutes}:${seconds} ${ampm}`;
         }
         
+        function convertToISTDate(utcTime) {
+            const date = new Date(utcTime);
+            // Convert to IST (UTC+5:30)
+            const istOffset = 5.5 * 60 * 60 * 1000; // 5 hours 30 minutes in milliseconds
+            const istTime = new Date(date.getTime() + istOffset + date.getTimezoneOffset() * 60 * 1000);
+            
+            const day = istTime.getDate().toString().padStart(2, '0');
+            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            return `${day} ${months[istTime.getMonth()]} ${istTime.getFullYear()}`;
+        }
+        
         // Initialize the app
         document.addEventListener('DOMContentLoaded', function() {
             initializeTabs();
@@ -439,6 +450,10 @@
                             <div>
                                 <h3 class="text-sm text-gray-500">Depth</h3>
                                 <p class="font-medium">${coords[2].toFixed(1)} km</p>
+                            </div>
+                            <div>
+                                <h3 class="text-sm text-gray-500">Date</h3>
+                                <p class="font-medium">${convertToISTDate(props.time)}</p>
                             </div>
                             <div>
                                 <h3 class="text-sm text-gray-500">Time (IST)</h3>
